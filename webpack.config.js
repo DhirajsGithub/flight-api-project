@@ -2,7 +2,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.worker\.js$/,
+        test: /\bmapbox-gl-csp-worker.js\b/i,
         use: { loader: "worker-loader" },
       },
     ],
