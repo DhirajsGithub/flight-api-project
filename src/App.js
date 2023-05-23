@@ -5,6 +5,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./App.css";
 import planeImg from "./assets/Images/Prognosticz_Plane.png";
+import { Tooltip } from "antd";
 
 function App() {
   // NOTE: we are only fetching for airline BAW and Aircraft type A319
@@ -95,8 +96,10 @@ function App() {
     for (let item of res.aircraft) {
       temp.push(item.registration);
     }
+
     setRegistrationNames(temp);
   };
+
   const fetchAircraftsDetails = async () => {
     let res = await fetch("https://api.radarbox.com/v2/flights/live", {
       method: "POST",
@@ -106,23 +109,37 @@ function App() {
     res = await res.json();
     let temp = [];
     for (let item of res.flights) {
-      temp.push({ latitude: item.latitude, longitude: item.longitude });
+      temp.push({
+        latitude: item.latitude,
+        longitude: item.longitude,
+        airlineName: item.airlineName,
+        depAirportName: item.depAirportName,
+        depAirportCity: item.depAirportCity,
+        depAirportState: item.depAirportState,
+        depAirportCountry: item.depAirportCountry,
+        arrAirportCity: item.arrAirportCity,
+        arrAirportState: item.arrAirportState,
+        arrAirportCountry: item.arrAirportCountry,
+      });
     }
-    setAircraftDetails(temp);
+    setAircraftDetails([...aircraftsDetails, ...temp]);
   };
+  console.log(airlinesName);
   console.log(aircraftTypesName);
   console.log(registrationNames);
   console.log(aircraftsDetails);
 
-  let iteration = parseInt(registrationNames.length / 20);
-  console.log(iteration, +" " + registrationNames.length);
+  // let iteration = parseInt(registrationNames.length / 20);
+  // // console.log(iteration, +" " + registrationNames.length);
 
   useEffect(() => {
     try {
       fetchAircraftTypes();
       fetchAirlines();
       fetchRegistrationNames();
+      // if (registrationNames.length > 0) {
       fetchAircraftsDetails();
+      // }
     } catch (error) {}
   }, []);
   return (
@@ -146,8 +163,31 @@ function App() {
                 anchor="center"
                 latitude={item.latitude}
                 longitude={item.longitude}
+                key={index + Math.random()}
               >
-                <img style={{ width: "50px", height: "50px" }} src={planeImg} />
+                <Tooltip
+                  title={
+                    <ul
+                      style={{
+                        textDecoration: "none",
+                        padding: 0,
+                        margin: 0,
+                        listStyleType: "none",
+                        textAlign: "center",
+                      }}
+                    >
+                      <li>{item.airlineName}</li>
+                      <li>
+                        from {item.depAirportCity} to {item.arrAirportCity}
+                      </li>
+                    </ul>
+                  }
+                >
+                  <img
+                    style={{ width: "50px", height: "50px" }}
+                    src={planeImg}
+                  />
+                </Tooltip>
               </Marker>
             );
           }
