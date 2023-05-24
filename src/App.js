@@ -96,7 +96,6 @@ function App() {
     for (let item of res.aircraft) {
       temp.push(item.registration);
     }
-
     setRegistrationNames(temp);
   };
 
@@ -105,6 +104,7 @@ function App() {
       method: "POST",
       headers,
       body: JSON.stringify(bodyForAircrafts),
+      mode: "cors",
     });
     res = await res.json();
     let temp = [];
@@ -122,7 +122,7 @@ function App() {
         arrAirportCountry: item.arrAirportCountry,
       });
     }
-    setAircraftDetails([...aircraftsDetails, ...temp]);
+    setAircraftDetails(temp);
   };
   console.log(airlinesName);
   console.log(aircraftTypesName);
@@ -137,9 +137,7 @@ function App() {
       fetchAircraftTypes();
       fetchAirlines();
       fetchRegistrationNames();
-      // if (registrationNames.length > 0) {
       fetchAircraftsDetails();
-      // }
     } catch (error) {}
   }, []);
   return (
